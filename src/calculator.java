@@ -23,7 +23,7 @@ public class calculator {
             String equation = reader.nextLine();
             String[] parts = equation.split("(?<=[-+*/])|(?=[-+*/])");
             if(!isNumeric(parts[0])){
-                System.out.println("Error: Input not of proper equation form. Ending program.");
+                System.err.println("Error: Input not of proper equation form. Ending program.");
                 break;
             }
             double total = Double.parseDouble(parts[0]);
@@ -48,13 +48,13 @@ public class calculator {
                             break;
                         default:
                             running = false;
-                            System.out.println("Error: Input not of proper equation form. Ending program.");
+                            System.err.println("Error: Input not of proper equation form. Ending program.");
                             break label;
                     }
                 }
                 else if(!checkValid(parts[i])){
                     running = false;
-                    System.out.println("Error: Input not of proper equation form. Ending program.");
+                    System.err.println("Error: Input not of proper equation form. Ending program.");
                     break;
                 }
             }
