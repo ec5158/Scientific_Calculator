@@ -2,11 +2,14 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class calc_screen {
-    protected static final String textFieldString = "Equation";
+public class calc_screen extends JFrame implements ActionListener{
+    static StringBuilder textFieldString;
+    static JTextField textField;
+    static StringBuilder equation;
     private static void setUpButtons(JFrame frame){
         JPanel buttonPanel = new JPanel();
         JPanel containerPanel = new JPanel();
+        calc_screen c = new calc_screen();
 
         JButton b00 = new JButton("00");
         JButton b0 = new JButton("0");
@@ -31,6 +34,30 @@ public class calc_screen {
         JButton bsub = new JButton("-");
         JButton bmult = new JButton("*");
         JButton bdiv = new JButton("÷");
+
+        bmult.addActionListener(c);
+        bdiv.addActionListener(c);
+        bsub.addActionListener(c);
+        badd.addActionListener(c);
+
+        b9.addActionListener(c);
+        b8.addActionListener(c);
+        b7.addActionListener(c);
+        b6.addActionListener(c);
+        b5.addActionListener(c);
+        b4.addActionListener(c);
+        b3.addActionListener(c);
+        b2.addActionListener(c);
+        b1.addActionListener(c);
+        b0.addActionListener(c);
+        b00.addActionListener(c);
+
+        beq.addActionListener(c);
+
+        bper.addActionListener(c);
+        bsqr.addActionListener(c);
+        bClear.addActionListener(c);
+        bdec.addActionListener(c);
 
         buttonPanel.setLayout(new GridLayout(5,4));
         buttonPanel.add(bper);
@@ -58,7 +85,36 @@ public class calc_screen {
         containerPanel.add(buttonPanel);
         frame.getContentPane().add(containerPanel);
     }
+
+    public void actionPerformed(ActionEvent e) {
+        String s = e.getActionCommand();
+
+        if ((s.charAt(0) >= '0' && s.charAt(0) <= '9') || s.charAt(0) == '.') {
+            textField.setText(String.valueOf(textFieldString.append(s)));
+            equation.append(s);
+        }
+        else if (s.charAt(0) == 'C') {
+            textFieldString.setLength(0);
+            equation.setLength(0);
+            textField.setText(String.valueOf(textFieldString));
+        }
+        else if (s.charAt(0) == '+' || s.charAt(0) == '-' || s.charAt(0) == '*' || s.charAt(0) == '÷') {
+            textField.setText(String.valueOf(textFieldString.append(s)));
+            equation.append(s);
+        }
+        else if (s.charAt(0) == '=') {
+            if(equation.length() != 0){
+                textField.setText(String.valueOf(calculator.calculate(equation.toString())));
+                textFieldString.setLength(0);
+                equation.setLength(0);
+            }
+        }
+
+    }
+
     private static void createAndShowGUI() {
+        equation = new StringBuilder(50);
+
         //Create and set up the window.
         JFrame frame = new JFrame("Calculator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -76,8 +132,10 @@ public class calc_screen {
         frame.setJMenuBar(greenMenuBar);
         frame.getContentPane().add(yellowLabel, BorderLayout.CENTER);
 
-        JTextField textField = new JTextField(10);
-        textField.setActionCommand(textFieldString);
+        textFieldString = new StringBuilder();
+        textField = new JTextField(16);
+        textField.setEditable(false);
+        //textField.setActionCommand(textFieldString);
         frame.getContentPane().add(textField, BorderLayout.PAGE_START);
 
         setUpButtons(frame);
