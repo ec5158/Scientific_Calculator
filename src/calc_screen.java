@@ -1,3 +1,11 @@
+/**
+ * @file calc_screen.java
+ * @author: Eric Chen
+ *
+ * @Desc: This class
+ *
+ *
+ **/
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -6,6 +14,14 @@ public class calc_screen extends JFrame implements ActionListener{
     static StringBuilder textFieldString;
     static JTextField textField;
     static StringBuilder equation;
+
+    /**
+     ** Name: setUpButtons
+     ** This function
+     **
+     ** @param frame the frame that the buttons will be put on
+     **
+     **/
     private static void setUpButtons(JFrame frame){
         JPanel buttonPanel = new JPanel();
         JPanel containerPanel = new JPanel();
@@ -24,11 +40,22 @@ public class calc_screen extends JFrame implements ActionListener{
         JButton b9 = new JButton("9");
 
         JButton beq = new JButton("=");
+        JButton bneg = new JButton("(-)");
+
+        JButton bsin = new JButton("sin");
+        JButton bcos = new JButton("cos");
+        JButton btan = new JButton("tan");
+
+        JButton bxpon = new JButton("^");
+        JButton bLog = new JButton("log");
+        JButton bln = new JButton("ln");
 
         JButton bper = new JButton("%");
         JButton bsqr = new JButton("√");
         JButton bClear = new JButton("Clear");
         JButton bdec = new JButton(".");
+        JButton bleftp = new JButton("(");
+        JButton brightp = new JButton(")");
 
         JButton badd = new JButton("+");
         JButton bsub = new JButton("-");
@@ -53,39 +80,67 @@ public class calc_screen extends JFrame implements ActionListener{
         b00.addActionListener(c);
 
         beq.addActionListener(c);
+        bneg.addActionListener(c);
+
+        bsin.addActionListener(c);
+        bcos.addActionListener(c);
+        btan.addActionListener(c);
+
+        bxpon.addActionListener(c);
+        bLog.addActionListener(c);
+        bln.addActionListener(c);
 
         bper.addActionListener(c);
         bsqr.addActionListener(c);
         bClear.addActionListener(c);
         bdec.addActionListener(c);
+        bleftp.addActionListener(c);
+        brightp.addActionListener(c);
 
-        buttonPanel.setLayout(new GridLayout(5,4));
+        buttonPanel.setLayout(new GridLayout(6,5));
+        buttonPanel.add(bleftp);
+        buttonPanel.add(brightp);
         buttonPanel.add(bper);
         buttonPanel.add(bsqr);
         buttonPanel.add(bClear);
+        buttonPanel.add(bsin);
+        buttonPanel.add(bcos);
+        buttonPanel.add(btan);
         buttonPanel.add(bdiv);
+        buttonPanel.add(bneg);
         buttonPanel.add(b7);
         buttonPanel.add(b8);
         buttonPanel.add(b9);
         buttonPanel.add(bmult);
+        buttonPanel.add(bxpon);
         buttonPanel.add(b4);
         buttonPanel.add(b5);
         buttonPanel.add(b6);
         buttonPanel.add(bsub);
+        buttonPanel.add(bLog);
         buttonPanel.add(b1);
         buttonPanel.add(b2);
         buttonPanel.add(b3);
         buttonPanel.add(badd);
+        buttonPanel.add(bln);
         buttonPanel.add(b0);
         buttonPanel.add(b00);
         buttonPanel.add(bdec);
+        buttonPanel.add(new JButton(""));
         buttonPanel.add(beq);
-        buttonPanel.setPreferredSize(new Dimension(300, 400));
+        buttonPanel.setPreferredSize(new Dimension(400, 400));
 
         containerPanel.add(buttonPanel);
         frame.getContentPane().add(containerPanel);
     }
 
+    /**
+     ** Name: actionPerformed
+     ** This function
+     **
+     ** @param e the ActionEvent being checked for
+     **
+     **/
     public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
 
@@ -98,7 +153,7 @@ public class calc_screen extends JFrame implements ActionListener{
             equation.setLength(0);
             textField.setText(String.valueOf(textFieldString));
         }
-        else if (s.charAt(0) == '+' || s.charAt(0) == '-' || s.charAt(0) == '*' || s.charAt(0) == '÷') {
+        else if (s.charAt(0) == '+' || s.charAt(0) == '-' || s.charAt(0) == '*' || s.charAt(0) == '÷' || s.charAt(0) == '√') {
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append(s);
         }
@@ -112,6 +167,11 @@ public class calc_screen extends JFrame implements ActionListener{
 
     }
 
+    /**
+     ** Name: createAndShowGUI
+     ** This function
+     **
+     **/
     private static void createAndShowGUI() {
         equation = new StringBuilder(50);
 
@@ -119,23 +179,16 @@ public class calc_screen extends JFrame implements ActionListener{
         JFrame frame = new JFrame("Calculator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JMenuBar greenMenuBar = new JMenuBar();
-        greenMenuBar.setOpaque(true);
-        greenMenuBar.setBackground(new Color(154, 165, 127));
-        greenMenuBar.setPreferredSize(new Dimension(500, 20));
-
         JLabel yellowLabel = new JLabel();
         yellowLabel.setOpaque(true);
         yellowLabel.setBackground(new Color(255, 255, 255));
-        yellowLabel.setPreferredSize(new Dimension(500, 500));
+        yellowLabel.setPreferredSize(new Dimension(1000, 1000));
 
-        frame.setJMenuBar(greenMenuBar);
         frame.getContentPane().add(yellowLabel, BorderLayout.CENTER);
 
         textFieldString = new StringBuilder();
         textField = new JTextField(16);
         textField.setEditable(false);
-        //textField.setActionCommand(textFieldString);
         frame.getContentPane().add(textField, BorderLayout.PAGE_START);
 
         setUpButtons(frame);
@@ -145,6 +198,13 @@ public class calc_screen extends JFrame implements ActionListener{
         frame.setVisible(true);
     }
 
+    /**
+     ** Name: main
+     ** This is the main function that runs the calc_screen class
+     **
+     ** @param args list of arguments given (should be null)
+     **
+     **/
     public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.

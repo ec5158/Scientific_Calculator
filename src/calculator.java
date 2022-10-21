@@ -1,3 +1,11 @@
+/**
+ * @file calculator.java
+ * @author: Eric Chen
+ *
+ * @Desc: This class
+ *
+ *
+ **/
 import java.util.Scanner;
 
 public class calculator {
@@ -9,17 +17,43 @@ public class calculator {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
 
+    //TODO Add checking for repeat operators (ex: ++-, *+-, etc.)
+    //     Add functionality for √ and % operators
+    //     Add functionality for other scientific calculator functions (ex: sin, cos, tan, log)
+    /**
+     ** Name: calculate
+     ** This function reads in an equation as a string and parses it
+     **     into an actual equation that is then solved
+     **
+     ** @param equ the equation being calculated as a string
+     **
+     ** @return the result of the equation
+     **/
     public static double calculate(String equ){
-        String[] parts = equ.split("(?<=[-+*÷])|(?=[-+*÷])");
-        if(!isNumeric(parts[0])){
+        String[] parts = equ.split("(?<=[-+*÷√])|(?=[-+*÷√])");
+        if(!isNumeric(parts[0]) && !parts[0].equals("√")){
             System.err.println("Error: Input not of proper equation form.");
-            return -1;
+            return Double.NaN;
         }
-        double total = Double.parseDouble(parts[0]);
+
+        int start = 0;
+
+        while(start < parts.length && !isNumeric(parts[start])) {
+            start++;
+        }
+
+        if(start >= parts.length){
+            System.err.println("Error: Input not of proper equation form.");
+            return Double.NaN;
+        }
+
+        boolean sqr = parts[0].equals("√");
+
+        double total = Double.parseDouble(parts[start]);
         double val1;
 
         label:
-        for(int i = 1; i < parts.length; i++) {
+        for(int i = start + 1; i < parts.length; i++) {
             if (isNumeric(parts[i])) {
                 val1 = Double.parseDouble(parts[i]);
                 switch (parts[i - 1]) {
@@ -45,15 +79,46 @@ public class calculator {
                 break;
             }
         }
+
+        if(sqr){
+            return Math.sqrt(total);
+        }
+
         return total;
     }
 
+    // Trying new form of calculating equations
+    // Consider changing equation to abstract syntax tree and performing bottom up evaluation
+    //  to get PEMDAS OR Shunting Yard Algorithm
+    public static double calculate2(String equ){
+        String[] parts = equ.split("(?<=[-+*÷√])|(?=[-+*÷√])");
+
+
+        return 0;
+    }
+
+    /**
+     ** Name: checkValid
+     ** This function checks if the string given is a valid operator
+     **
+     ** @param str the string that is being checked
+     **
+     ** @return whether the string is a valid operator or not
+     **/
     public static boolean checkValid(String str){
         return !switch (str) {
             case "+", "-", "*", "÷" -> true;
             default -> false;
         };
     }
+
+    /**
+     ** Name: main
+     ** This is the main function that runs the calculator class
+     **
+     ** @param args list of arguments given (should be null)
+     **
+     **/
     public static void main(String[] args) {
         Scanner reader = new Scanner(System.in);
         boolean running = true;
