@@ -6,7 +6,10 @@
  *
  *
  **/
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
+import java.util.Stack;
 
 public class calculator {
     public static double add(double val1, double val2){return val1 + val2;}
@@ -17,9 +20,6 @@ public class calculator {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
 
-    //TODO Add checking for repeat operators (ex: ++-, *+-, etc.)
-    //     Add functionality for √ and % operators
-    //     Add functionality for other scientific calculator functions (ex: sin, cos, tan, log)
     /**
      ** Name: calculate
      ** This function reads in an equation as a string and parses it
@@ -90,11 +90,76 @@ public class calculator {
     // Trying new form of calculating equations
     // Consider changing equation to abstract syntax tree and performing bottom up evaluation
     //  to get PEMDAS OR Shunting Yard Algorithm
-    public static double calculate2(String equ){
+    public static Queue<String> calculate2(String equ){
         String[] parts = equ.split("(?<=[-+*÷√])|(?=[-+*÷√])");
+        Queue<String> aspects = new LinkedList<>();
+        Stack<String> operators = new Stack<>();
 
+        for(String part: parts){
+            if(isNumeric(part)){
+                aspects.add(part);
+            }
+            else{
+                // TODO add sqrt, percent, and sin, cos, and tan
+                switch (part) {
+                    case "+", "-", "(" -> operators.push(part);
+                    case "*", "÷" -> {
+                        while (operators.peek().equals("*") || operators.peek().equals("÷")) {
+                            aspects.add(operators.pop());
+                        }
+                        operators.push(part);
+                    }
+                    case ")" -> {
+                        while (!operators.isEmpty() && !operators.peek().equals(")")) {
+                            aspects.add(operators.pop());
+                        }
+                        if (operators.isEmpty()) {
+                            System.err.println("Error: Input not of proper equation form.");
+                            return null;
+                        }
+                        operators.pop();
+                    }
+                    default -> {
+                        System.err.println("Error: Input not of proper equation form.");
+                        return null;
+                    }
+                }
 
-        return 0;
+            }
+        }
+
+        while(!operators.isEmpty()){
+            if(operators.peek().equals("(")){
+                System.err.println("Error: Input not of proper equation form.");
+                return null;
+            }
+            aspects.add(operators.pop());
+        }
+
+        return aspects;
+    }
+
+    /**
+     ** Name: eval
+     ** This function reads in an equation as a string and parses it
+     **     into an actual equation that is then solved
+     **
+     ** @param equ the equation being calculated as a string
+     **
+     ** @return the result of the equation
+     **/
+    public static double eval(String equ){
+        double total = 0;
+        Queue<String> aspects = calculate2(equ);
+        if(aspects == null){
+            return Double.NaN;
+        }
+        // TODO Solve the equation from the queue
+        while(!aspects.isEmpty()){
+            aspects.poll();
+        }
+
+        return total;
     }
 
     /**
