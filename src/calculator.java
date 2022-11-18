@@ -30,7 +30,9 @@ public class calculator {
      ** @return the result of the equation
      **/
     public static double calculate(String equ){
-        String[] parts = equ.split("(?<=[-+*÷√])|(?=[-+*÷√])");
+        String parsed_equ = equ.replaceAll("\\s","");
+        parsed_equ = parsed_equ.replaceAll("/","÷");
+        String[] parts = parsed_equ.split("(?<=[-+*÷√])|(?=[-+*÷√])");
         if(!isNumeric(parts[0]) && !parts[0].equals("√")){
             System.err.println("Error: Input not of proper equation form.");
             return Double.NaN;
@@ -52,31 +54,23 @@ public class calculator {
         double total = Double.parseDouble(parts[start]);
         double val1;
 
-        label:
         for(int i = start + 1; i < parts.length; i++) {
             if (isNumeric(parts[i])) {
                 val1 = Double.parseDouble(parts[i]);
                 switch (parts[i - 1]) {
-                    case "+":
-                        total = add(total, val1);
-                        break;
-                    case "-":
-                        total = sub(total, val1);
-                        break;
-                    case "*":
-                        total = mul(total, val1);
-                        break;
-                    case "÷":
-                        total = div(total, val1);
-                        break;
-                    default:
+                    case "+" -> total = add(total, val1);
+                    case "-" -> total = sub(total, val1);
+                    case "*" -> total = mul(total, val1);
+                    case "÷" -> total = div(total, val1);
+                    default -> {
                         System.err.println("Error: Input not of proper equation form.");
-                        break label;
+                        return Double.NaN;
+                    }
                 }
             }
-            else if(checkValid(parts[i])){
+            else if(checkNotValid(parts[i])){
                 System.err.println("Error: Input not of proper equation form.");
-                break;
+                return Double.NaN;
             }
         }
 
@@ -90,8 +84,11 @@ public class calculator {
     // Trying new form of calculating equations
     // Consider changing equation to abstract syntax tree and performing bottom up evaluation
     //  to get PEMDAS OR Shunting Yard Algorithm
-    public static Queue<String> calculate2(String equ){
-        String[] parts = equ.split("(?<=[-+*÷√])|(?=[-+*÷√])");
+    public static Queue<String> extendedCalculate(String equ){
+        String parsed_equ = equ.replaceAll("\\s","");
+        parsed_equ = parsed_equ.replaceAll("/","÷");
+        // TODO More rigorous testing
+        String[] parts = parsed_equ.split("(?=[-+*÷()])|(?<=[^-+*÷][-+*÷])|(?<=[()]|(?<=√))");
         Queue<String> aspects = new LinkedList<>();
         Stack<String> operators = new Stack<>();
 
@@ -100,27 +97,34 @@ public class calculator {
                 aspects.add(part);
             }
             else{
-                // TODO add sqrt, percent, and sin, cos, and tan
+                // TODO add ^, percent, and sin, cos, and tan
                 switch (part) {
-                    case "+", "-", "(" -> operators.push(part);
-                    case "*", "÷" -> {
-                        while (operators.peek().equals("*") || operators.peek().equals("÷")) {
+                    case "(" -> operators.push(part);
+                    case "+", "-", "*", "÷"-> {
+                        while (!operators.isEmpty() && operators.peek().equals("√")){
+                            aspects.add(operators.pop());
+                        }
+                        while (!operators.isEmpty() && (operators.peek().equals("*") || operators.peek().equals("÷"))){
                             aspects.add(operators.pop());
                         }
                         operators.push(part);
                     }
+                    case "√" -> {
+                        operators.push(part);
+                    }
                     case ")" -> {
-                        while (!operators.isEmpty() && !operators.peek().equals(")")) {
+                        while (!operators.isEmpty() && !operators.peek().equals("(")) {
                             aspects.add(operators.pop());
                         }
                         if (operators.isEmpty()) {
-                            System.err.println("Error: Input not of proper equation form.");
+                            System.err.println("Error: No ) found for (. Ending Program");
                             return null;
                         }
                         operators.pop();
                     }
                     default -> {
-                        System.err.println("Error: Input not of proper equation form.");
+                        System.out.println(part);
+                        System.err.println("Error: Input not of proper equation form. Ending Program");
                         return null;
                     }
                 }
@@ -130,7 +134,7 @@ public class calculator {
 
         while(!operators.isEmpty()){
             if(operators.peek().equals("(")){
-                System.err.println("Error: Input not of proper equation form.");
+                System.err.println("Error: Extra ( found with no matching ). Ending Program");
                 return null;
             }
             aspects.add(operators.pop());
@@ -149,28 +153,73 @@ public class calculator {
      ** @return the result of the equation
      **/
     public static double eval(String equ){
-        double total = 0;
-        Queue<String> aspects = calculate2(equ);
+        Queue<String> aspects = extendedCalculate(equ);
         if(aspects == null){
+            System.err.println("Error: No equation to evaluate. Ending Program");
             return Double.NaN;
         }
-        // TODO Solve the equation from the queue
+        Stack<String> solver = new Stack<>();
+        String current;
+        double total;
+        double val1;
+        double val2;
+
         while(!aspects.isEmpty()){
-            aspects.poll();
+            current = aspects.poll();
+            if(isNumeric(current)){
+                solver.push(current);
+            }
+            else{
+                switch (current) {
+                    case "+" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        val2 = Double.parseDouble(solver.pop());
+                        total = add(val1, val2);
+                        solver.push(Double.toString(total));
+                    }
+                    case "-" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        val2 = Double.parseDouble(solver.pop());
+                        total = sub(val2, val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "*" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        val2 = Double.parseDouble(solver.pop());
+                        total = mul(val1, val2);
+                        solver.push(Double.toString(total));
+                    }
+                    case "÷" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        val2 = Double.parseDouble(solver.pop());
+                        total = div(val2, val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "√" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        total = Math.sqrt(val1);
+                        solver.push(Double.toString(total));
+                    }
+                    default -> {
+                        System.err.println("Error: Input syntax detected. Ending Program");
+                        return Double.NaN;
+                    }
+                }
+            }
         }
 
-        return total;
+        return Double.parseDouble(solver.pop());
     }
 
     /**
-     ** Name: checkValid
+     ** Name: checkNotValid
      ** This function checks if the string given is a valid operator
      **
      ** @param str the string that is being checked
      **
      ** @return whether the string is a valid operator or not
      **/
-    public static boolean checkValid(String str){
+    public static boolean checkNotValid(String str){
         return !switch (str) {
             case "+", "-", "*", "÷" -> true;
             default -> false;
@@ -191,42 +240,10 @@ public class calculator {
         while(running){
             System.out.print("Enter an equation: ");
             String equation = reader.nextLine();
-            String[] parts = equation.split("(?<=[-+*/])|(?=[-+*/])");
-            if(!isNumeric(parts[0])){
-                System.err.println("Error: Input not of proper equation form. Ending program.");
-                break;
-            }
-            double total = Double.parseDouble(parts[0]);
-            double val1;
+            double total = calculate(equation);
 
-            label:
-            for(int i = 1; i < parts.length; i++) {
-                if (isNumeric(parts[i])) {
-                    val1 = Double.parseDouble(parts[i]);
-                    switch (parts[i - 1]) {
-                        case "+":
-                            total = add(total, val1);
-                            break;
-                        case "-":
-                            total = sub(total, val1);
-                            break;
-                        case "*":
-                            total = mul(total, val1);
-                            break;
-                        case "/":
-                            total = div(total, val1);
-                            break;
-                        default:
-                            running = false;
-                            System.err.println("Error: Input not of proper equation form. Ending program.");
-                            break label;
-                    }
-                }
-                else if(checkValid(parts[i])){
-                    running = false;
-                    System.err.println("Error: Input not of proper equation form. Ending program.");
-                    break;
-                }
+            if(Double.isNaN(total)){
+                running = false;
             }
 
             if(running){

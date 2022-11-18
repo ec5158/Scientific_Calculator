@@ -40,7 +40,8 @@ public class calc_screen extends JFrame implements ActionListener{
         JButton b9 = new JButton("9");
 
         JButton beq = new JButton("=");
-        JButton bneg = new JButton("(-)");
+        // TODO replace negative button with something else
+        JButton bneg = new JButton("");
 
         JButton bsin = new JButton("sin");
         JButton bcos = new JButton("cos");
@@ -157,9 +158,13 @@ public class calc_screen extends JFrame implements ActionListener{
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append(s);
         }
+        else if (s.charAt(0) == '(' || s.charAt(0) == ')'){
+            textField.setText(String.valueOf(textFieldString.append(s)));
+            equation.append(s);
+        }
         else if (s.charAt(0) == '=') {
             if(equation.length() != 0){
-                textField.setText(String.valueOf(calculator.calculate(equation.toString())));
+                textField.setText(String.valueOf(calculator.eval(equation.toString())));
                 textFieldString.setLength(0);
                 equation.setLength(0);
             }
