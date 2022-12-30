@@ -19,6 +19,12 @@ public class calculator {
     public static boolean isNumeric(String str){
         return str.matches("-?\\d+(\\.\\d+)?");
     }
+    public static double factorial(double n){
+        if(n == 0){
+            return 1;
+        }
+        return n * factorial(n - 1);
+    }
 
     /**
      ** Name: calculate
@@ -87,8 +93,8 @@ public class calculator {
     public static Queue<String> extendedCalculate(String equ){
         String parsed_equ = equ.replaceAll("\\s","");
         parsed_equ = parsed_equ.replaceAll("/","÷");
-        // TODO More rigorous testing
-        String[] parts = parsed_equ.split("(?=[-+*÷()])|(?<=[^-+*÷][-+*÷])|(?<=[()]|(?<=√))");
+        // TODO More rigorous testing for regex
+        String[] parts = parsed_equ.split("(?=[-+*÷()^!])|(?<=[^-+*÷][-+*÷])|(?<=[()]|(?<=√)|(?<=s)|(?<=c)|(?<=t)|(?<=l)|(?<=n))|(?<=\\^)|(?<=!)");
         Queue<String> aspects = new LinkedList<>();
         Stack<String> operators = new Stack<>();
 
@@ -97,11 +103,11 @@ public class calculator {
                 aspects.add(part);
             }
             else{
-                // TODO add ^, percent, and sin, cos, and tan
+                // TODO More testing for operator combinations and equations
                 switch (part) {
                     case "(" -> operators.push(part);
                     case "+", "-", "*", "÷"-> {
-                        while (!operators.isEmpty() && operators.peek().equals("√")){
+                        while (!operators.isEmpty() && (operators.peek().equals("√") || operators.peek().equals("^") || operators.peek().equals("!"))){
                             aspects.add(operators.pop());
                         }
                         while (!operators.isEmpty() && (operators.peek().equals("*") || operators.peek().equals("÷"))){
@@ -109,7 +115,7 @@ public class calculator {
                         }
                         operators.push(part);
                     }
-                    case "√" -> {
+                    case "√", "^", "!", "s", "c", "t", "l", "n" -> {
                         operators.push(part);
                     }
                     case ")" -> {
@@ -123,7 +129,7 @@ public class calculator {
                         operators.pop();
                     }
                     default -> {
-                        System.out.println(part);
+                        //System.out.println(part);
                         System.err.println("Error: Input not of proper equation form. Ending Program");
                         return null;
                     }
@@ -198,6 +204,42 @@ public class calculator {
                     case "√" -> {
                         val1 = Double.parseDouble(solver.pop());
                         total = Math.sqrt(val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "^" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        val2 = Double.parseDouble(solver.pop());
+                        total = Math.pow(val2, val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "!" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        total = factorial(val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "s" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        total = Math.sin(val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "c" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        total = Math.cos(val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "t" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        total = Math.tan(val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "l" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        total = Math.log10(val1);
+                        solver.push(Double.toString(total));
+                    }
+                    case "n" -> {
+                        val1 = Double.parseDouble(solver.pop());
+                        total = Math.log(val1);
                         solver.push(Double.toString(total));
                     }
                     default -> {

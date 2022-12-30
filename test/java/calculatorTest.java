@@ -84,6 +84,9 @@ class calculatorTest {
     void regexTest(){
         System.out.println(Arrays.toString("√99+2-(√11÷(2-4)+1)".split("(?=[-+*÷()])|(?<=[^-+*÷][-+*÷])|(?<=[()])|(?<=√)")));
         System.out.println(Arrays.toString("√99+2-(√11÷(2-4)+1)".split("(?<=\\D)(?=\\d)")));
+        System.out.println(Arrays.toString("√99+2-(√11÷(2-4)+1)".split("(?=[-+*÷()^!])|(?<=[^-+*÷][-+*÷])|(?<=[()]|(?<=√))|(?<=\\^)|(?<=!)")));
+        System.out.println(Arrays.toString("√99+s2-(√11÷(2-4)+t1)".split("(?=[-+*÷()^!])|(?<=[^-+*÷][-+*÷])|(?<=[()]|(?<=√)|(?<=s)|(?<=c)|(?<=t))|(?<=\\^)|(?<=!)")));
+        System.out.println(Arrays.toString("√99+s2-(√11÷(l2-n4)+t1)".split("(?=[-+*÷()^!])|(?<=[^-+*÷][-+*÷])|(?<=[()]|(?<=√)|(?<=s)|(?<=c)|(?<=t)|(?<=l)|(?<=n))|(?<=\\^)|(?<=!)")));
     }
 
     @Test

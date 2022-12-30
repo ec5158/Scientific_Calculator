@@ -40,8 +40,7 @@ public class calc_screen extends JFrame implements ActionListener{
         JButton b9 = new JButton("9");
 
         JButton beq = new JButton("=");
-        // TODO replace negative button with something else
-        JButton bneg = new JButton("");
+        JButton bfact = new JButton("!");
 
         JButton bsin = new JButton("sin");
         JButton bcos = new JButton("cos");
@@ -81,7 +80,7 @@ public class calc_screen extends JFrame implements ActionListener{
         b00.addActionListener(c);
 
         beq.addActionListener(c);
-        bneg.addActionListener(c);
+        bfact.addActionListener(c);
 
         bsin.addActionListener(c);
         bcos.addActionListener(c);
@@ -108,7 +107,7 @@ public class calc_screen extends JFrame implements ActionListener{
         buttonPanel.add(bcos);
         buttonPanel.add(btan);
         buttonPanel.add(bdiv);
-        buttonPanel.add(bneg);
+        buttonPanel.add(bfact);
         buttonPanel.add(b7);
         buttonPanel.add(b8);
         buttonPanel.add(b9);
@@ -158,9 +157,36 @@ public class calc_screen extends JFrame implements ActionListener{
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append(s);
         }
-        else if (s.charAt(0) == '(' || s.charAt(0) == ')'){
+        else if (s.charAt(0) == '^' || s.charAt(0) == '!' || s.charAt(0) == '(' || s.charAt(0) == ')'){
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append(s);
+        }
+        else if (s.charAt(0) == '%'){
+            textField.setText(String.valueOf(textFieldString.append(s)));
+            equation.append("÷100");
+        }
+        else if (s.charAt(0) == 's'){
+            textField.setText(String.valueOf(textFieldString.append(s)));
+            equation.append("s");
+        }
+        else if (s.charAt(0) == 'c'){
+            textField.setText(String.valueOf(textFieldString.append(s)));
+            equation.append("c");
+        }
+        else if (s.charAt(0) == 't'){
+            textField.setText(String.valueOf(textFieldString.append(s)));
+            equation.append("t");
+        }
+        else if (s.charAt(0) == 'l'){
+            if(s.charAt(1) == 'n'){
+                textField.setText(String.valueOf(textFieldString.append(s)));
+                equation.append("n");
+            }
+            else{
+                textField.setText(String.valueOf(textFieldString.append(s)));
+                equation.append("l");
+            }
+
         }
         else if (s.charAt(0) == '=') {
             if(equation.length() != 0){
