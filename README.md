@@ -16,8 +16,11 @@ The calculations themselves are done through the use of the [Shunting Yard Algor
 - [X] Square roots
 - [X] Exponentials
 - [X] Percentages
+- [X] Sin, Cos, and Tan
+- [X] Logarithms and Natural Logarithms
+- [X] Factorials
 
 ### Works in Progress:
-- [ ] Sin, Cos, and Tan
-- [ ] Logarithms and Natural Logarithms
-- [ ] Factorials
+- [ ] More Testing
+- [ ] Documentation
+- [ ] Radian/Degree
