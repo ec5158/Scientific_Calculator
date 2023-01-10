@@ -2,8 +2,8 @@
  * @file calc_screen.java
  * @author: Eric Chen
  *
- * @Desc: This class
- *
+ * @Desc: This class displays the GUI of the calculator and
+ *  handles how the buttons work
  *
  **/
 import java.awt.*;
@@ -17,7 +17,8 @@ public class calc_screen extends JFrame implements ActionListener{
 
     /**
      ** Name: setUpButtons
-     ** This function
+     ** This function creates a panel in the GUI that contains all
+     **     the buttons needed for the calculator to work
      **
      ** @param frame the frame that the buttons will be put on
      **
@@ -27,6 +28,7 @@ public class calc_screen extends JFrame implements ActionListener{
         JPanel containerPanel = new JPanel();
         calc_screen c = new calc_screen();
 
+        // Basic numbers
         JButton b00 = new JButton("00");
         JButton b0 = new JButton("0");
         JButton b1 = new JButton("1");
@@ -39,29 +41,40 @@ public class calc_screen extends JFrame implements ActionListener{
         JButton b8 = new JButton("8");
         JButton b9 = new JButton("9");
 
+        // Equal and factorial
         JButton beq = new JButton("=");
         JButton bfact = new JButton("!");
 
+        // Sin, cos, and tan
         JButton bsin = new JButton("sin");
         JButton bcos = new JButton("cos");
         JButton btan = new JButton("tan");
 
+        // Exponential, logarithmic, and natural log
         JButton bxpon = new JButton("^");
         JButton bLog = new JButton("log");
         JButton bln = new JButton("ln");
 
+        // Percent, square root, and clear
         JButton bper = new JButton("%");
         JButton bsqr = new JButton("√");
+        // Clear button removes current equation
+        //  from screen and internal storage
         JButton bClear = new JButton("Clear");
+
+        // Decimal and parenthesis
         JButton bdec = new JButton(".");
         JButton bleftp = new JButton("(");
         JButton brightp = new JButton(")");
 
+        // Addition, subtraction, multiplication, and division
         JButton badd = new JButton("+");
         JButton bsub = new JButton("-");
         JButton bmult = new JButton("*");
         JButton bdiv = new JButton("÷");
 
+        // addActionListener adds the function
+        //  that causes pressing the button to do something
         bmult.addActionListener(c);
         bdiv.addActionListener(c);
         bsub.addActionListener(c);
@@ -97,6 +110,7 @@ public class calc_screen extends JFrame implements ActionListener{
         bleftp.addActionListener(c);
         brightp.addActionListener(c);
 
+        // Adds all the buttons onto a grid-like layout
         buttonPanel.setLayout(new GridLayout(6,5));
         buttonPanel.add(bleftp);
         buttonPanel.add(brightp);
@@ -130,29 +144,34 @@ public class calc_screen extends JFrame implements ActionListener{
         buttonPanel.add(beq);
         buttonPanel.setPreferredSize(new Dimension(400, 400));
 
+        // Adds the button panel to the rest of the screen
         containerPanel.add(buttonPanel);
         frame.getContentPane().add(containerPanel);
     }
 
     /**
      ** Name: actionPerformed
-     ** This function
+     ** This function updates the calculator screen GUI
+     **     depending on what button is pushed
      **
-     ** @param e the ActionEvent being checked for
+     ** @param e the ActionEvent being checked for (what button is being pushed)
      **
      **/
     public void actionPerformed(ActionEvent e) {
         String s = e.getActionCommand();
 
+        // Adds the number and/or decimal to the equation and screen
         if ((s.charAt(0) >= '0' && s.charAt(0) <= '9') || s.charAt(0) == '.') {
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append(s);
         }
+        // Clears the screen and resets the storied equation to prepare for a new one
         else if (s.charAt(0) == 'C') {
             textFieldString.setLength(0);
             equation.setLength(0);
             textField.setText(String.valueOf(textFieldString));
         }
+        // Adds the operation to the screen and the equation
         else if (s.charAt(0) == '+' || s.charAt(0) == '-' || s.charAt(0) == '*' || s.charAt(0) == '÷' || s.charAt(0) == '√') {
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append(s);
@@ -161,33 +180,42 @@ public class calc_screen extends JFrame implements ActionListener{
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append(s);
         }
+        // Achieves percentages by converting the number into a decimal with ÷100
         else if (s.charAt(0) == '%'){
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append("÷100");
         }
+        // Sin, single letters are easier to interpret with regex than full words
         else if (s.charAt(0) == 's'){
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append("s");
         }
+        // Cos, single letters are easier to interpret with regex than full words
         else if (s.charAt(0) == 'c'){
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append("c");
         }
+        // Tan, single letters are easier to interpret with regex than full words
         else if (s.charAt(0) == 't'){
             textField.setText(String.valueOf(textFieldString.append(s)));
             equation.append("t");
         }
+        // Logarithmic operators
         else if (s.charAt(0) == 'l'){
+            // Natural log
             if(s.charAt(1) == 'n'){
                 textField.setText(String.valueOf(textFieldString.append(s)));
                 equation.append("n");
             }
+            // Otherwise regular log
             else{
                 textField.setText(String.valueOf(textFieldString.append(s)));
                 equation.append("l");
             }
 
         }
+        // Send the equation to calculator.java to evaluate it and then
+        //  displays the answer onto the screen
         else if (s.charAt(0) == '=') {
             if(equation.length() != 0){
                 textField.setText(String.valueOf(calculator.eval(equation.toString())));
@@ -200,7 +228,7 @@ public class calc_screen extends JFrame implements ActionListener{
 
     /**
      ** Name: createAndShowGUI
-     ** This function
+     ** This function creates the actual calculator screen GUI
      **
      **/
     private static void createAndShowGUI() {
@@ -210,6 +238,7 @@ public class calc_screen extends JFrame implements ActionListener{
         JFrame frame = new JFrame("Calculator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Some background creation
         JLabel yellowLabel = new JLabel();
         yellowLabel.setOpaque(true);
         yellowLabel.setBackground(new Color(255, 255, 255));
@@ -217,7 +246,10 @@ public class calc_screen extends JFrame implements ActionListener{
 
         frame.getContentPane().add(yellowLabel, BorderLayout.CENTER);
 
+        // textFieldString keeps track of the equation
         textFieldString = new StringBuilder();
+        // This is the field of the GUI where the equation and later
+        //  solution are displayed
         textField = new JTextField(16);
         textField.setEditable(false);
         frame.getContentPane().add(textField, BorderLayout.PAGE_START);

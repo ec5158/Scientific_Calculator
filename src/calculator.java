@@ -2,8 +2,8 @@
  * @file calculator.java
  * @author: Eric Chen
  *
- * @Desc: This class
- *
+ * @Desc: This class performs the actual calculations of the program
+ *  including parsing and solving the given equations
  *
  **/
 import java.util.LinkedList;
@@ -20,6 +20,9 @@ public class calculator {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
     public static double factorial(double n){
+        if(n < 0){
+            throw new IllegalArgumentException();
+        }
         if(n == 0){
             return 1;
         }
@@ -30,7 +33,13 @@ public class calculator {
      ** Name: calculate
      ** This function reads in an equation as a string and parses it
      **     into an actual equation that is then solved
-     **
+     **     ***                                                              ***
+     *         Note: This function only performs basic arithmetic
+     *         (i.e. +, -, *, ÷) and square roots and serves as a first attempt
+     *         at making a calculator. Aspects of this function are thus
+     *         redundant to the rest of the project.
+     *         Refer to extendedCalculate for more robust calculations.
+     *      ***                                                              ***
      ** @param equ the equation being calculated as a string
      **
      ** @return the result of the equation
@@ -39,6 +48,7 @@ public class calculator {
         String parsed_equ = equ.replaceAll("\\s","");
         parsed_equ = parsed_equ.replaceAll("/","÷");
         String[] parts = parsed_equ.split("(?<=[-+*÷√])|(?=[-+*÷√])");
+        // First part of equation should be a number or √
         if(!isNumeric(parts[0]) && !parts[0].equals("√")){
             System.err.println("Error: Input not of proper equation form.");
             return Double.NaN;
@@ -87,37 +97,63 @@ public class calculator {
         return total;
     }
 
-    // Trying new form of calculating equations
-    // Consider changing equation to abstract syntax tree and performing bottom up evaluation
-    //  to get PEMDAS OR Shunting Yard Algorithm
+
+    /**
+     * Name: extendedCalculate
+     * This function reads in an equation and converts it into Reverse Polish Notation
+     *      form (RPN) (3+4-2 becomes 342-+ in RPN) for usage in a Shunting Yard algorithm
+     *
+     * @param equ the equation being calculated in a string format
+     *
+     * @return the equation converted into Reverse Polish Notation and stored in a Queue
+     */
     public static Queue<String> extendedCalculate(String equ){
+        // Removes all the spaces in the equation
         String parsed_equ = equ.replaceAll("\\s","");
+        // Changes every / symbol into ÷ because the regex parser uses ÷
         parsed_equ = parsed_equ.replaceAll("/","÷");
         // TODO More rigorous testing for regex
+        // Separates the given equation into an array of numbers and operators
+        //  that can be parsed in the next section
         String[] parts = parsed_equ.split("(?=[-+*÷()^!])|(?<=[^-+*÷][-+*÷])|(?<=[()]|(?<=√)|(?<=s)|(?<=c)|(?<=t)|(?<=l)|(?<=n))|(?<=\\^)|(?<=!)");
         Queue<String> aspects = new LinkedList<>();
         Stack<String> operators = new Stack<>();
 
+        // Goes through every number and operator and sorts them into Queues and Stacks
+        //  The queue is for the final product in RPF, while the stack contains all
+        //  the operators
         for(String part: parts){
+            // If it is a number then it is immediately added to Queue
             if(isNumeric(part)){
                 aspects.add(part);
             }
+            // Adds operators to the stack under specific conditions
             else{
                 // TODO More testing for operator combinations and equations
                 switch (part) {
                     case "(" -> operators.push(part);
                     case "+", "-", "*", "÷"-> {
+                        // Operators √, ^, and ! have a higher precedence than +, -, *, and ÷
+                        //  so they should be performed first when going through the equation in RPN
+                        //  thus they are pushed into the queue to be processed first
                         while (!operators.isEmpty() && (operators.peek().equals("√") || operators.peek().equals("^") || operators.peek().equals("!"))){
                             aspects.add(operators.pop());
                         }
+                        // Operators * and ÷ have a higher precedence than + and - so they should be
+                        //  performed first when going through the equation in RPN
+                        //  thus they are pushed into the queue to be processed first
                         while (!operators.isEmpty() && (operators.peek().equals("*") || operators.peek().equals("÷"))){
                             aspects.add(operators.pop());
                         }
                         operators.push(part);
                     }
+                    // TODO add priority for s, c, t, l, n
                     case "√", "^", "!", "s", "c", "t", "l", "n" -> {
                         operators.push(part);
                     }
+                    // Goes through the stack and adds the operators to the queue that are in
+                    //  between the () so that they have higher precedence when solving
+                    //  the equation
                     case ")" -> {
                         while (!operators.isEmpty() && !operators.peek().equals("(")) {
                             aspects.add(operators.pop());
@@ -138,7 +174,9 @@ public class calculator {
             }
         }
 
+        // Puts the rest of the operators from the stack into the queue
         while(!operators.isEmpty()){
+            // Double checks that every parenthesis are a matching pair
             if(operators.peek().equals("(")){
                 System.err.println("Error: Extra ( found with no matching ). Ending Program");
                 return null;
@@ -159,17 +197,26 @@ public class calculator {
      ** @return the result of the equation
      **/
     public static double eval(String equ){
+        // Converts the equation string into a Queue of all the individual
+        //  operators and numbers in RPN form
         Queue<String> aspects = extendedCalculate(equ);
         if(aspects == null){
             System.err.println("Error: No equation to evaluate. Ending Program");
             return Double.NaN;
         }
+        // Keeps a list of all the results computed from the equation
+        //  ex: 3+4-3 would have the stack keep the result from 3+4=7
+        //  for usage in the -3 part
         Stack<String> solver = new Stack<>();
         String current;
         double total;
         double val1;
         double val2;
 
+        // Goes through every number and operator until the equation
+        //  is finished
+        // Refer to Shunting Yard Algorithm for more in-depth look
+        //  at how this works
         while(!aspects.isEmpty()){
             current = aspects.poll();
             if(isNumeric(current)){
@@ -250,6 +297,8 @@ public class calculator {
             }
         }
 
+        // The final value solved and pushed into the solver stack
+        //  should be the final result of the equation
         return Double.parseDouble(solver.pop());
     }
 
@@ -271,7 +320,7 @@ public class calculator {
     /**
      ** Name: main
      ** This is the main function that runs the calculator class
-     **
+     **     in command line form
      ** @param args list of arguments given (should be null)
      **
      **/

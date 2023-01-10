@@ -1,3 +1,11 @@
+/**
+ * @file calculatorTest.java
+ * @author: Eric Chen
+ *
+ * @Desc: This class
+ *
+ *
+ **/
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -38,13 +46,19 @@ class calculatorTest {
     }
 
     @Test
+    void factorialTest(){
+        assertEquals(1, calculator.factorial(0));
+        assertEquals(3628800, calculator.factorial(10));
+    }
+
+    @Test
     void isNumericTest() {
         assertTrue(calculator.isNumeric("12"));
         assertFalse(calculator.isNumeric("+-"));
     }
 
     @Test
-    void calculate2Test() {//TODO More rigorous testing
+    void extendedCalculateTest() {//TODO More rigorous testing
         var calculator = new calculator();
         Queue<String> example = new LinkedList<>();
         example.add("4");
@@ -67,6 +81,7 @@ class calculatorTest {
         assertEquals(12, calculator.eval("3 * 4"));
         assertEquals(-1, calculator.eval("3 - 4"));
         assertEquals(0.75, calculator.eval("3 ÷ 4"));
+        assertEquals(3, calculator.eval("√9"));
     }
 
     @Test
