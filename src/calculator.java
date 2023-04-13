@@ -112,7 +112,6 @@ public class calculator {
         String parsed_equ = equ.replaceAll("\\s","");
         // Changes every / symbol into ÷ because the regex parser uses ÷
         parsed_equ = parsed_equ.replaceAll("/","÷");
-        // TODO More rigorous testing for regex
         // Separates the given equation into an array of numbers and operators
         //  that can be parsed in the next section
         String[] parts = parsed_equ.split("(?=[-+*÷()^!])|(?<=[^-+*÷][-+*÷])|(?<=[()]|(?<=√)|(?<=s)|(?<=c)|(?<=t)|(?<=l)|(?<=n))|(?<=\\^)|(?<=!)");
@@ -129,10 +128,21 @@ public class calculator {
             }
             // Adds operators to the stack under specific conditions
             else{
-                // TODO More testing for operator combinations and equations
                 switch (part) {
                     case "(" -> operators.push(part);
                     case "+", "-", "*", "÷"-> {
+                        // Operators sin, cos, and tam have a higher precedence than +, -, *, and ÷
+                        //  so they should be performed first when going through the equation in RPN
+                        //  thus they are pushed into the queue to be processed first
+                        while (!operators.isEmpty() && (operators.peek().equals("s") || operators.peek().equals("c") || operators.peek().equals("t"))){
+                            aspects.add(operators.pop());
+                        }
+                        // Operators log and ln have a higher precedence than +, -, *, and ÷
+                        //  so they should be performed first when going through the equation in RPN
+                        //  thus they are pushed into the queue to be processed first
+                        while (!operators.isEmpty() && (operators.peek().equals("l") || operators.peek().equals("n"))){
+                            aspects.add(operators.pop());
+                        }
                         // Operators √, ^, and ! have a higher precedence than +, -, *, and ÷
                         //  so they should be performed first when going through the equation in RPN
                         //  thus they are pushed into the queue to be processed first
@@ -147,7 +157,6 @@ public class calculator {
                         }
                         operators.push(part);
                     }
-                    // TODO add priority for s, c, t, l, n
                     case "√", "^", "!", "s", "c", "t", "l", "n" -> {
                         operators.push(part);
                     }
